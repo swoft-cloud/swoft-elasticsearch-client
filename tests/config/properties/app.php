@@ -15,7 +15,7 @@ return [
     'docs' => require 'es_docs.php',
     'components' => [
         'custom' => [
-            'Swoftx\\Elasticsearch' => BASE_PATH . '/../src'
+            'Swoft\\Elasticsearch' => BASE_PATH . '/../src'
         ]
     ],
 ];
