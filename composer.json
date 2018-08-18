@@ -1,0 +1,32 @@
+{
+    "name": "limingxinleo/swoft-elasticsearch",
+    "type": "library",
+    "license": "Apache-2.0",
+    "keywords": [
+        "php",
+        "swoole",
+        "swoft",
+        "elasticsearch"
+    ],
+    "description": "No-blocking Coroutine Elasticsearch Client",
+    "autoload": {
+        "psr-4": {
+            "Swoft\\Elasticsearch\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SwoftTest\\": "tests"
+        }
+    },
+    "require": {
+        "php": ">=7.0",
+        "swoft/framework": "^1.0.24",
+        "elasticsearch/elasticsearch": "^6.0",
+        "swoft/http-client": "^1.0"
+    },
+    "require-dev": {
+        "swoft/swoole-ide-helper": "dev-master",
+        "phpunit/phpunit": "^5.7"
+    }
+}
