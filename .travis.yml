@@ -1,0 +1,65 @@
+language: php
+
+dist: trusty
+sudo: true
+
+matrix:
+  fast_finish: true
+  include:
+      - php: 7.0
+        env: ES_VERSION="6.0"
+      - php: 7.0
+        env: ES_VERSION="6.x"
+
+      - php: 7.1
+        env: ES_VERSION="6.0"
+      - php: 7.1
+        env: ES_VERSION="6.x"
+
+      - php: 7.2
+        env: ES_VERSION="6.0"
+
+      - php: nightly
+        env: ES_VERSION="6.0"
+  allow_failures:
+    - php: nightly
+    - env: ES_VERSION="6.x"
+
+git:
+  depth: 1
+
+env:
+  global:
+    - ES_TEST_HOST=http://localhost:9200
+    - JAVA_HOME="/usr/lib/jvm/java-8-oracle/jre"
+
+services:
+  - redis-server
+
+before_install:
+  - export PHP_MAJOR="$(`phpenv which php` -r 'echo phpversion();' | cut -d '.' -f 1)"
+  - export PHP_MINOR="$(`phpenv which php` -r 'echo phpversion();' | cut -d '.' -f 2)"
+  - echo $PHP_MAJOR
+  - echo $PHP_MINOR
+
+install:
+  - cd $TRAVIS_BUILD_DIR
+  # 更新ES
+  - sudo update-java-alternatives -s java-8-oracle
+  - bash tests/download_and_run_es.sh
+  # 更新扩展
+  - wget https://github.com/redis/hiredis/archive/v0.13.3.tar.gz -O hiredis.tar.gz && mkdir -p hiredis && tar -xf hiredis.tar.gz -C hiredis --strip-components=1 && cd hiredis && sudo make -j$(nproc) && sudo make install && sudo ldconfig && cd ..
+  - bash tests/swoole.install.sh
+  - phpenv config-rm xdebug.ini
+  - phpenv config-add tests/ci.ini
+  - cp -rf $TRAVIS_BUILD_DIR/tests/.env.example $TRAVIS_BUILD_DIR/tests/.env
+  # 安装项目
+  - composer self-update
+  - cd $TRAVIS_BUILD_DIR
+  - composer install --prefer-dist --optimize-autoloader
+  - php tests/init.php
+  - sleep 5
+
+script:
+  - cd $TRAVIS_BUILD_DIR
+  - ./vendor/bin/phpunit
